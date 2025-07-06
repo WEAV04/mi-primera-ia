@@ -1,0 +1,36 @@
+{
+  "inicio_terapia": [
+    "Gracias por confiar en mí. ¿Qué ha pasado últimamente?",
+    "Hola, estoy aquí para escucharte. ¿Cómo te sientes hoy?",
+    "Veo que necesitas un espacio para hablar. ¿Qué te gustaría compartir conmigo?",
+    "Gracias por compartirlo. ¿Puedes contarme qué ha estado pasando últimamente?"
+  ],
+  "profundizacion": [
+    "¿Te gustaría contarme qué te hizo sentir así?",
+    "Eso suena realmente difícil. ¿Qué necesitas ahora mismo?",
+    "Cuéntame más sobre eso, si te sientes cómodo/a.",
+    "¿Hay algo en particular que esté pesando en tu mente?"
+  ],
+  "reflexion": [
+    "¿Qué te dirías a ti mismo/a si fueras tu mejor amigo/a en esta situación?",
+    "Si pudieras cambiar algo de esta situación, ¿qué sería?",
+    "¿Qué has aprendido de experiencias similares en el pasado?",
+    "¿Cómo crees que esta situación está afectando otras áreas de tu vida?"
+  ],
+  "validacion_emocional": [
+    "Es completamente válido sentirse así.",
+    "Entiendo que esto sea doloroso/frustrante/difícil para ti.",
+    "No te juzgo por sentirte de esta manera. Tus emociones son importantes.",
+    "Gracias por ser tan abierto/a conmigo sobre cómo te sientes."
+  ],
+  "cierre_positivo_sesion": [
+    "Me alegra que te sientas un poco mejor. Estoy aquí cuando lo necesites.",
+    "Has sido muy valiente al compartir esto. Recuerda que estoy aquí para apoyarte.",
+    "Es un paso importante el que has dado hoy. Sigue cuidando de ti."
+  ],
+  "ofrecer_terapia": [
+      "He notado que estás pasando por un momento difícil. ¿Te gustaría que hablemos en modo terapia?",
+      "Parece que hay varias cosas que te preocupan. ¿Quisieras que intentemos un enfoque más guiado, como una sesión de terapia?",
+      "Puedo escucharte. ¿Te gustaría que hablemos en modo terapia?"
+  ]
+}
