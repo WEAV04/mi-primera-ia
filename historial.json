@@ -1,0 +1,37 @@
+[
+    {
+        "text": "¡Estoy muy feliz hoy!",
+        "emotion": "alegría",
+        "timestamp": "2025-07-06T02:40:52.637747"
+    },
+    {
+        "text": "Me siento un poco triste.",
+        "emotion": "tristeza",
+        "timestamp": "2025-07-06T02:40:52.660835"
+    },
+    {
+        "text": "Sigo sintiéndome mal y triste.",
+        "emotion": "tristeza",
+        "timestamp": "2025-07-06T02:40:52.681885"
+    },
+    {
+        "text": "Definitivamente es un día triste para mí.",
+        "emotion": "tristeza",
+        "timestamp": "2025-07-06T02:40:52.706289"
+    },
+    {
+        "text": "De repente me siento mucho mejor, ¡qué alegría!",
+        "emotion": "alegría",
+        "timestamp": "2025-07-06T02:40:52.736682"
+    },
+    {
+        "text": "¡Sí, la alegría continúa!",
+        "emotion": "alegría",
+        "timestamp": "2025-07-06T02:40:52.766990"
+    },
+    {
+        "text": "Todo es genial y estoy feliz.",
+        "emotion": "alegría",
+        "timestamp": "2025-07-06T02:40:52.797955"
+    }
+]
