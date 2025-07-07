@@ -8,6 +8,8 @@ Puede detectar una emoción básica en el texto proporcionado por el usuario y r
 -   Detección de emociones (simulada): alegría, tristeza, enojo, miedo, neutral.
 -   Respuestas empáticas predefinidas para cada emoción.
 -   Endpoint `/talk` para interactuar con la IA.
+-   **Historial de interacciones:** Guarda cada conversación en `historial.json`.
+-   **Detección de patrones emocionales:** Identifica si una emoción se ha repetido con frecuencia en las últimas interacciones y lo notifica en la respuesta.
 
 ## Requisitos Previos
 
@@ -93,6 +95,38 @@ Respuesta esperada (variará):
     "emotion_detected": "tristeza",
     "ai_response": "Lamento mucho que te sientas así. Estoy aquí para escucharte."
 }
+```
+
+Si interactúas varias veces y se detecta un patrón (por ejemplo, tristeza recurrente), la respuesta podría incluir una notificación del patrón:
+
+```json
+{
+    "emotion_detected": "tristeza",
+    "ai_response": "Tómate tu tiempo para sentir. Si necesitas algo, dímelo.",
+    "emotional_pattern_detected": "He notado que te has sentido 'tristeza' con frecuencia últimamente (en 3 de las últimas 5 interacciones)."
+}
+```
+
+### Estructura de `historial.json`
+
+El archivo `historial.json` almacenará una lista de objetos, donde cada objeto representa una interacción y tiene la siguiente estructura:
+
+```json
+[
+  {
+    "timestamp": "2023-10-27T10:30:00.123456",
+    "user_text": "Me siento un poco triste hoy.",
+    "detected_emotion": "tristeza",
+    "ai_response": "Lamento que te sientas así. ¿Quieres hablar de ello?"
+  },
+  {
+    "timestamp": "2023-10-27T10:35:15.789012",
+    "user_text": "Sí, he tenido una semana difícil.",
+    "detected_emotion": "tristeza",
+    "ai_response": "Entiendo, a veces las semanas son complicadas."
+  }
+  // ... más interacciones
+]
 ```
 
 **Ejemplo de Enojo:**
