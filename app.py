@@ -1,8 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import random
+import json
+from datetime import datetime, timezone # Added timezone
 
 app = FastAPI()
+
+HISTORY_FILE = "historial.json"
 
 class UserInput(BaseModel):
     text: str
@@ -68,9 +72,69 @@ async def talk_to_ai(user_input: UserInput):
         raise HTTPException(status_code=400, detail="El texto no puede estar vacío.")
 
     emotion = detect_emotion(user_input.text)
-    response = random.choice(empathetic_responses[emotion])
+    ai_response_text = random.choice(empathetic_responses[emotion])
 
-    return {"emotion_detected": emotion, "ai_response": response}
+    # Guardar interacción en el historial
+    try:
+        history = []
+        try:
+            with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            # Si el archivo no existe o está vacío/corrupto, empezamos con una lista vacía
+            history = []
+
+        interaction = {
+            "timestamp": datetime.now(timezone.utc).isoformat(), # Changed to timezone-aware UTC datetime
+            "user_text": user_input.text,
+            "detected_emotion": emotion,
+            "ai_response": ai_response_text
+        }
+        history.append(interaction)
+
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=4)
+
+    except IOError as e:
+        # En un caso real, aquí podría ir un logging más robusto
+        print(f"Error al escribir en el historial: {e}")
+        # No relanzamos la excepción para no interrumpir la respuesta al usuario,
+        # pero podría ser una opción dependiendo de los requisitos.
+
+    # Detectar patrones emocionales
+    pattern_message = detect_emotional_patterns(history) # history ya está cargada y actualizada
+
+    response_data = {
+        "emotion_detected": emotion,
+        "ai_response": ai_response_text
+    }
+    if pattern_message:
+        response_data["emotional_pattern_detected"] = pattern_message
+
+    return response_data
+
+
+def detect_emotional_patterns(history: list, num_interactions_to_check: int = 5, recurrence_threshold: int = 3) -> str | None:
+    """
+    Detecta patrones emocionales en las últimas interacciones.
+    Por ejemplo, si una emoción específica aparece `recurrence_threshold` veces
+    en las últimas `num_interactions_to_check` interacciones.
+    """
+    if not history or len(history) < num_interactions_to_check:
+        return None # No hay suficientes datos para detectar un patrón
+
+    recent_interactions = history[-num_interactions_to_check:]
+    emotion_counts = {}
+    for interaction in recent_interactions:
+        emotion = interaction.get("detected_emotion")
+        if emotion:
+            emotion_counts[emotion] = emotion_counts.get(emotion, 0) + 1
+
+    for emotion, count in emotion_counts.items():
+        if count >= recurrence_threshold:
+            return f"He notado que te has sentido '{emotion}' con frecuencia últimamente (en {count} de las últimas {len(recent_interactions)} interacciones)."
+
+    return None
 
 @app.get("/")
 async def read_root():
