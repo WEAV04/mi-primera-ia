@@ -72,9 +72,85 @@ async def talk_to_ai(user_input: UserInput):
 
     return {"emotion_detected": emotion, "ai_response": response}
 
+@app.post("/talk_v2")
+async def talk_to_ai_v2(user_input: UserInput):
+    """
+    Versión mejorada de /talk que integra el registro y detección de patrones emocionales.
+    """
+    if not user_input.text or user_input.text.strip() == "":
+        raise HTTPException(status_code=400, detail="El texto no puede estar vacío.")
+
+    # Importar funciones del módulo de memoria emocional
+    # Idealmente, esto estaría al inicio del archivo, pero para el ejemplo se coloca aquí.
+    # En una app real, gestionar importaciones y posibles errores de importación.
+    try:
+        from modules.memoria_emocional import registrar_emocion, leer_historial, detectar_patrones_simples
+    except ImportError:
+        # Manejo básico si el módulo no se encuentra, podría devolver un error o funcionar en modo degradado
+        raise HTTPException(status_code=500, detail="Módulo de memoria emocional no encontrado.")
+
+    detected_emotion = detect_emotion(user_input.text)
+
+    # Simular intensidad y contexto para el registro
+    # En un sistema real, la intensidad podría venir del modelo de detección de emociones
+    # y el contexto podría ser generado por NLP (ej. extracción de palabras clave).
+    simulated_intensity = round(random.uniform(0.5, 0.9), 2) # Intensidad aleatoria para el ejemplo
+    simulated_context = user_input.text[:50] # Primeros 50 caracteres como contexto simple
+
+    # Registrar la emoción actual
+    registro_exitoso = registrar_emocion(
+        emocion=detected_emotion,
+        intensidad=simulated_intensity,
+        source_text=user_input.text,
+        context=simulated_context
+    )
+    if not registro_exitoso:
+        # Loggear o manejar el error de registro como sea apropiado
+        print(f"Advertencia: No se pudo registrar la emoción para el input: {user_input.text}")
+
+    # Leer el historial y detectar patrones
+    # Podríamos definir umbrales y emociones objetivo basados en alguna lógica o configuración
+    # Por ejemplo, buscar 3 tristezas recientes o 2 enojos en la última hora.
+    # Para este ejemplo, buscaremos 3 ocurrencias de la emoción actual en todo el historial.
+    # ¡Esto es solo un ejemplo simple! Una lógica de patrones más avanzada sería necesaria.
+
+    patron_detectado_info = None
+    if registro_exitoso: # Solo intentar leer y detectar si el registro fue ok (o si el historial podría existir)
+        historial_emocional = leer_historial()
+        if historial_emocional: # Si hay historial
+            # Ejemplo: detectar si la emoción actual (si es negativa) se ha repetido 3 veces
+            # en los últimos 10 eventos (simplificación de ventana de tiempo por conteo de eventos)
+            # o en las últimas 24 horas (ventana de tiempo real)
+            if detected_emotion in ["tristeza", "enojo", "miedo"]:
+                # Usaremos una ventana de tiempo de 1 día (24 * 60 * 60 segundos)
+                # y un umbral de 2 repeticiones (incluyendo la actual) para que sea más fácil de probar
+                patron_detectado_info = detectar_patrones_simples(
+                    historial_emociones=historial_emocional,
+                    emocion_objetivo=detected_emotion,
+                    umbral_conteo=2, # La actual + 1 anterior = patrón
+                    ventana_tiempo_segundos=24 * 60 * 60
+                )
+
+    # Elegir respuesta empática
+    ai_response_text = random.choice(empathetic_responses[detected_emotion])
+
+    # Si se detectó un patrón, podríamos modificar la respuesta o añadir información
+    # Esto es muy básico, en el futuro se refinaría.
+    if patron_detectado_info:
+        ai_response_text += f" (He notado que te has sentido {detected_emotion} varias veces recientemente. ¿Está todo bien?)"
+        print(f"Patrón detectado: {patron_detectado_info}") # Para logging en servidor
+
+    return {
+        "emotion_detected": detected_emotion,
+        "ai_response": ai_response_text,
+        "emotion_registered": registro_exitoso,
+        "pattern_info": patron_detectado_info
+    }
+
+
 @app.get("/")
 async def read_root():
-    return {"message": "Bienvenido a la API de IA Emocional. Usa la ruta POST /talk para interactuar."}
+    return {"message": "Bienvenido a la API de IA Emocional. Usa POST /talk para la versión simple o POST /talk_v2 para la versión con memoria."}
 
 # Para ejecutar localmente: uvicorn app:app --reload
 # (Esto es solo un comentario, no se ejecutará aquí)
